@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">E-Learning App</string>
+
+    <!-- Navigation -->
+    <string name="home">Home</string>
+    <string name="courses">Courses</string>
+    <string name="categories">Categories</string>
+    <string name="profile">Profile</string>
+
+    <!-- Home Screen -->
+    <string name="welcome_title">E-Learning Platform</string>
+    <string name="welcome_subtitle">Learn. Earn. Level Up.</string>
+    <string name="welcome_card_title">Welcome!</string>
+    <string name="welcome_card_description">Start your learning journey today. Complete courses, earn XP points, and level up your skills.</string>
+    <string name="features_title">Features</string>
+    <string name="start_learning_button">Start Learning Now</string>
+
+    <!-- Features -->
+    <string name="feature_video_courses">Video Courses</string>
+    <string name="feature_video_description">Learn from expert-led video tutorials</string>
+    <string name="feature_gamification">Gamification</string>
+    <string name="feature_gamification_description">Earn XP and level up as you learn</string>
+    <string name="feature_categories">Categories</string>
+    <string name="feature_categories_description">Organized learning paths</string>
+    <string name="feature_progress">Progress Tracking</string>
+    <string name="feature_progress_description">Track your learning journey</string>
+
+    <!-- Courses Screen -->
+    <string name="courses_title">Courses</string>
+    <string name="loading">Loading...</string>
+    <string name="error_loading_courses">Error loading courses</string>
+    <string name="no_courses">No courses available</string>
+    <string name="retry">Retry</string>
+    <string name="watch_button">Watch</string>
+    <string name="minutes_abbr">min</string>
+
+    <!-- Common -->
+    <string name="error_network">Network error</string>
+    <string name="error_unknown">Unknown error occurred</string>
+</resources>

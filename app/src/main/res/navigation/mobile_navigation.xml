@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.yourpackage.elearning.presentation.fragments.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+
+        <!-- Add action to navigate to courses -->
+        <action
+            android:id="@+id/action_nav_home_to_nav_courses"
+            app:destination="@id/nav_courses" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_courses"
+        android:name="com.yourpackage.elearning.presentation.fragments.CoursesFragment"
+        android:label="Courses"
+        tools:layout="@layout/fragment_courses">
+
+        <action
+            android:id="@+id/action_nav_courses_to_course_details_fragment"
+            app:destination="@id/course_details_fragment" />
+
+        <argument
+            android:name="course"
+            app:argType="com.yourpackage.elearning.data.models.Course" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/course_details_fragment"
+        android:name="com.yourpackage.elearning.presentation.fragments.CourseDetailsFragment"
+        android:label="Course Details"
+        tools:layout="@layout/fragment_course_details">
+
+        <!-- Add this argument -->
+        <argument
+            android:name="course"
+            app:argType="com.yourpackage.elearning.data.models.Course" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_categories"
+        android:name="com.yourpackage.elearning.presentation.fragments.CategoriesFragment"
+        android:label="Categories"
+        tools:layout="@layout/fragment_categories">
+
+        <action
+            android:id="@+id/action_nav_categories_to_category_courses_fragment"
+            app:destination="@id/category_courses_fragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/category_courses_fragment"
+        android:name="com.yourpackage.elearning.presentation.fragments.CategoryCoursesFragment"
+        android:label="Category Courses"
+        tools:layout="@layout/fragment_category_courses">
+
+        <argument
+            android:name="category"
+            app:argType="com.yourpackage.elearning.data.models.Category" />
+
+        <action
+            android:id="@+id/action_category_courses_fragment_to_course_details_fragment"
+            app:destination="@id/course_details_fragment" />
+
+        <argument
+            android:name="course"
+            app:argType="com.yourpackage.elearning.data.models.Course" />
+
+    </fragment>
+
+<!--    <fragment-->
+<!--        android:id="@+id/nav_profile"-->
+<!--        android:name="com.yourpackage.elearning.presentation.fragments.ProfileFragment"-->
+<!--        android:label="Profile"-->
+<!--        tools:layout="@layout/fragment_profile" />-->
+</navigation>
