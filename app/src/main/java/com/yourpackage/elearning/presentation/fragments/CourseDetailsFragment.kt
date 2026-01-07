@@ -1,25 +1,29 @@
 package com.yourpackage.elearning.presentation.fragments
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.yourpackage.elearning.R
+import com.yourpackage.elearning.data.models.SubCourse
+import com.yourpackage.elearning.data.repository.CourseRepository
 import com.yourpackage.elearning.databinding.FragmentCourseDetailsBinding
+import com.yourpackage.elearning.presentation.adapters.SubCoursesAdapter
+import kotlinx.coroutines.launch
 
 class CourseDetailsFragment : Fragment() {
 
     private var _binding: FragmentCourseDetailsBinding? = null
     private val binding get() = _binding!!
-    private lateinit var course: com.yourpackage.elearning.data.models.Course
-    private lateinit var youTubePlayerView: YouTubePlayerView
-    private var videoId: String? = null
+
+    private val args: CourseDetailsFragmentArgs by navArgs()
+    private val courseRepository = CourseRepository()
+    private lateinit var subCoursesAdapter: SubCoursesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,112 +37,104 @@ class CourseDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Get course from arguments
-        arguments?.let { bundle ->
-            course = bundle.getParcelable("course")!!
-            setupUI()
-            setupYouTubePlayer()
-            setupClickListeners()
-        } ?: run {
-            // If no course found, go back
-            findNavController().popBackStack()
+        setupSubCoursesList()
+
+        // We only have courseId now
+        val courseId = args.courseId
+
+        // Optional: show placeholders until you add "getCourseById"
+        binding.tvCourseTitle.text = ""
+        binding.tvCourseDescription.text = ""
+        binding.tvCategory.visibility = View.GONE
+        loadCourseDetails(courseId)
+        loadSubCourses(courseId)
+    }
+
+    private fun setupSubCoursesList() {
+        subCoursesAdapter = SubCoursesAdapter { subCourse ->
+            openSubCourseDetails(subCourse)
+        }
+
+        binding.rvSubcourses.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = subCoursesAdapter
         }
     }
 
-    private fun setupUI() {
-        // Set course data
-        binding.tvCourseTitle.text = course.title
-        binding.tvCourseDescription.text = course.description ?: "No description available"
-        binding.tvDuration.text = "${course.duration} min"
-        binding.tvXpPoints.text = "${course.xpPoints} XP"
-
-        // Set category if available
-        course.category?.let { category ->
-            binding.tvCategory.text = category.name
-            binding.tvCategory.visibility = View.VISIBLE
-        } ?: run {
-            binding.tvCategory.visibility = View.GONE
-        }
-    }
-
-    private fun setupYouTubePlayer() {
-        youTubePlayerView = binding.youtubePlayerView
-
-        // Add lifecycle observer
-        lifecycle.addObserver(youTubePlayerView)
-
-        // Extract video ID
-        videoId = extractYouTubeVideoId(course.videoUrl)
-
-        // Simple initialization without options
-        youTubePlayerView.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-            override fun onReady(youTubePlayer: YouTubePlayer) {
-                if (videoId != null) {
-                    youTubePlayer.loadVideo(videoId!!, 0f)
-                }
-            }
-
-            override fun onError(youTubePlayer: YouTubePlayer, error: com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerError) {
-                // Show error overlay when there's an error
-                binding.errorOverlay.visibility = View.VISIBLE
-                binding.tvYoutubeError.text = "Error: $error\nTap to open in YouTube app"
-            }
-        })
-    }
-
-    private fun setupClickListeners() {
-        // Mark as complete button
-        binding.btnMarkComplete.setOnClickListener {
-            binding.btnMarkComplete.text = "Completed ✓"
-            binding.btnMarkComplete.isEnabled = false
-        }
-
-        // Click on error overlay to open YouTube app
-        binding.errorOverlay.setOnClickListener {
-            openVideoInYouTubeApp()
-        }
-
-        // Also make the whole video container clickable when there's an error
-        binding.videoContainer.setOnClickListener {
-            if (binding.errorOverlay.visibility == View.VISIBLE) {
-                openVideoInYouTubeApp()
-            }
-        }
-    }
-
-    private fun openVideoInYouTubeApp() {
-        videoId?.let { id ->
+    private fun loadSubCourses(courseId: Int) {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
-                // Try to open in YouTube app first
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse("vnd.youtube:$id")
-                intent.putExtra("VIDEO_ID", id)
-                startActivity(intent)
+                val response = courseRepository.getSubCoursesByCourse(courseId)
+                if (response.isSuccessful && response.body()?.success == true) {
+                    val subCourses = response.body()?.data.orEmpty()
+                    subCoursesAdapter.submitList(subCourses)
+                    toggleEmptyState(subCourses)
+                } else {
+                    showEmptyState(getString(R.string.error_loading_lessons))
+                }
             } catch (e: Exception) {
-                // If YouTube app is not installed, open in browser
-                val webIntent = Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://www.youtube.com/watch?v=$id")
-                )
-                startActivity(webIntent)
+                showEmptyState(getString(R.string.error_loading_lessons))
             }
-        } ?: run {
-            // If no video ID, open YouTube homepage
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse("https://www.youtube.com")
-            startActivity(intent)
         }
     }
 
-    private fun extractYouTubeVideoId(url: String): String? {
-        val regex = Regex("(?<=v=|v/|vi=|vi/|embed/|youtu.be/|watch\\?v=|watch\\?.&v=)([A-Za-z0-9_-]{11})")
-        return regex.find(url)?.value
+    private fun loadCourseDetails(courseId: Int) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val response = courseRepository.getCourseById(courseId)
+                if (response.isSuccessful && response.body()?.success == true) {
+                    val course = response.body()!!.data
+
+                    binding.tvCourseTitle.text = course?.title
+                    binding.tvCourseDescription.text =
+                        course?.description ?: getString(R.string.no_description_available)
+
+                    val categoryName = course?.category?.name
+                    if (categoryName.isNullOrBlank()) {
+                        binding.tvCategory.visibility = View.GONE
+                    } else {
+                        binding.tvCategory.visibility = View.VISIBLE
+                        binding.tvCategory.text = categoryName
+                    }
+                } else {
+                    // Don't break the screen; just show fallback text
+                    binding.tvCourseTitle.text = ""
+                    binding.tvCourseDescription.text = ""
+                    binding.tvCategory.visibility = View.GONE
+                }
+            } catch (_: Exception) {
+                binding.tvCourseTitle.text = ""
+                binding.tvCourseDescription.text = ""
+                binding.tvCategory.visibility = View.GONE
+            }
+        }
     }
 
+
+    private fun toggleEmptyState(items: List<SubCourse>) {
+        if (items.isEmpty()) {
+            showEmptyState(getString(R.string.no_lessons_available))
+        } else {
+            binding.tvSubcoursesEmpty.visibility = View.GONE
+            binding.rvSubcourses.visibility = View.VISIBLE
+        }
+    }
+
+    private fun showEmptyState(message: String) {
+        binding.tvSubcoursesEmpty.text = message
+        binding.tvSubcoursesEmpty.visibility = View.VISIBLE
+        binding.rvSubcourses.visibility = View.GONE
+    }
+
+    private fun openSubCourseDetails(subCourse: SubCourse) {
+        // Use SafeArgs instead of manual bundle
+        val action =
+            CourseDetailsFragmentDirections.actionCourseDetailsFragmentToSubCourseDetailsFragment(subCourse)
+        findNavController().navigate(action)
+    }
 
     override fun onDestroyView() {
-        super.onDestroyView()
-        youTubePlayerView.release()
         _binding = null
+        super.onDestroyView()
     }
 }

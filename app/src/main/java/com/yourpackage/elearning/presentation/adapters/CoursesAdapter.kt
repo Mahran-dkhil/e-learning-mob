@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.yourpackage.elearning.R
 import com.yourpackage.elearning.data.models.Course
 import com.yourpackage.elearning.databinding.ItemCourseBinding
 
@@ -23,8 +24,7 @@ class CoursesAdapter(
     }
 
     override fun onBindViewHolder(holder: CourseViewHolder, position: Int) {
-        val course = getItem(position)
-        holder.bind(course)
+        holder.bind(getItem(position))
     }
 
     inner class CourseViewHolder(
@@ -34,9 +34,11 @@ class CoursesAdapter(
 
         fun bind(course: Course) {
             binding.tvCourseTitle.text = course.title
-            binding.tvCourseDescription.text = course.description ?: "No description"
-            binding.tvDuration.text = "${course.duration} min"
-            binding.tvXpPoints.text = "${course.xpPoints} XP"
+
+            binding.tvCourseDescription.text =
+                course.description ?: binding.root.context.getString(
+                    com.yourpackage.elearning.R.string.no_description_available
+                )
 
             course.category?.let { category ->
                 binding.tvCategory.text = category.name
@@ -45,25 +47,28 @@ class CoursesAdapter(
                 binding.tvCategory.visibility = View.GONE
             }
 
-            // Watch button click
-            binding.btnWatch.setOnClickListener {
-                onCourseClick(course)
+            // IMPORTANT:
+            // In list endpoints (categories/courses), API often doesn't return subcourses.
+            // So we hide "lessons count" in lists to avoid showing misleading "0 lessons".
+            val lessonsCount = course.subcourses?.size
+            if (lessonsCount != null && lessonsCount > 0) {
+                binding.tvDuration.visibility = View.VISIBLE
+                binding.tvDuration.text = binding.root.context.getString(
+                    R.string.lessons_count,
+                    lessonsCount
+                )
+            } else {
+                binding.tvDuration.visibility = View.GONE
             }
 
-            // Whole card click (optional)
-            binding.root.setOnClickListener {
-                onCourseClick(course)
-            }
+
+            binding.btnWatch.setOnClickListener { onCourseClick(course) }
+            binding.root.setOnClickListener { onCourseClick(course) }
         }
     }
 
     class CourseDiffCallback : DiffUtil.ItemCallback<Course>() {
-        override fun areItemsTheSame(oldItem: Course, newItem: Course): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: Course, newItem: Course): Boolean {
-            return oldItem == newItem
-        }
+        override fun areItemsTheSame(oldItem: Course, newItem: Course): Boolean = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: Course, newItem: Course): Boolean = oldItem == newItem
     }
 }

@@ -1,4 +1,3 @@
-// data/models/Course.kt
 package com.yourpackage.elearning.data.models
 
 import android.os.Parcelable
@@ -16,17 +15,12 @@ data class Course(
     @SerializedName("description")
     val description: String?,
 
-    @SerializedName("video_url")
-    val videoUrl: String,
-
-    @SerializedName("duration")
-    val duration: Int,
-
-    @SerializedName("xp_points")
-    val xpPoints: Int,
-
     @SerializedName("category")
     val category: Category?,
+
+    // IMPORTANT: can be null in list responses or when API doesn't include it
+    @SerializedName("subcourses")
+    val subcourses: List<SubCourseLight>? = emptyList(),
 
     @SerializedName("is_published")
     val isPublished: Boolean? = true

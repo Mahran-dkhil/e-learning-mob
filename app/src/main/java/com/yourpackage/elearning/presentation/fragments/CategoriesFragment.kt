@@ -87,10 +87,9 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun navigateToCategoryCourses(category: com.yourpackage.elearning.data.models.Category) {
-        // Temporary manual navigation
-        val bundle = Bundle()
-        bundle.putParcelable("category", category)
-        findNavController().navigate(R.id.category_courses_fragment, bundle)
+        val action =
+            CategoriesFragmentDirections.actionNavCategoriesToCategoryCoursesFragment(category)
+        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {

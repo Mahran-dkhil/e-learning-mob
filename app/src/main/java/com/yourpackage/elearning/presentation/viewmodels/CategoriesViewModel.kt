@@ -1,17 +1,18 @@
 // presentation/viewmodels/CategoriesViewModel.kt
 package com.yourpackage.elearning.presentation.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourpackage.elearning.data.api.NetworkClient
 import com.yourpackage.elearning.data.models.Category
 import com.yourpackage.elearning.data.models.Course
+import com.yourpackage.elearning.data.repository.CategoryRepository
 import kotlinx.coroutines.launch
 
-class CategoriesViewModel : ViewModel() {
+class CategoriesViewModel(
+    private val categoryRepository: CategoryRepository = CategoryRepository()
+) : ViewModel() {
 
     private val _categories = MutableLiveData<List<Category>>()
     val categories: LiveData<List<Category>> = _categories
@@ -31,7 +32,7 @@ class CategoriesViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = NetworkClient.apiService.getCategories()
+                val response = categoryRepository.getCategories()
 
                 if (response.isSuccessful && response.body()?.success == true) {
                     _categories.value = response.body()?.data ?: emptyList()
@@ -52,15 +53,18 @@ class CategoriesViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = NetworkClient.apiService.getCoursesByCategory(categoryId)
+                val response = categoryRepository.getCoursesByCategory(categoryId)
 
                 if (response.isSuccessful && response.body()?.success == true) {
                     val courses = response.body()?.data?.courses ?: emptyList()
                     _categoryCourses.value = courses
+                    _error.value = null
                 } else {
+                    _categoryCourses.value = emptyList()
                     _error.value = "Failed to load courses: ${response.message()}"
                 }
             } catch (e: Exception) {
+                _categoryCourses.value = emptyList()
                 _error.value = "Network error: ${e.message}"
                 e.printStackTrace()
             } finally {

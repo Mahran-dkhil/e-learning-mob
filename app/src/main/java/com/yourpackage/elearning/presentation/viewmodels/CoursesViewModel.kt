@@ -4,11 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourpackage.elearning.data.api.NetworkClient
 import com.yourpackage.elearning.data.models.Course
+import com.yourpackage.elearning.data.repository.CourseRepository
 import kotlinx.coroutines.launch
 
-class CoursesViewModel : ViewModel() {
+class CoursesViewModel(
+    private val courseRepository: CourseRepository = CourseRepository()
+) : ViewModel() {
 
     private val _courses = MutableLiveData<List<Course>>()
     val courses: LiveData<List<Course>> = _courses
@@ -25,7 +27,7 @@ class CoursesViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = NetworkClient.apiService.getCourses()
+                val response = courseRepository.getCourses()
 
                 if (response.isSuccessful && response.body()?.success == true) {
                     _courses.value = response.body()?.data ?: emptyList()

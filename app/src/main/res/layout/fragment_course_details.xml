@@ -10,180 +10,62 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Replace the YouTubePlayerView with this FrameLayout -->
-        <FrameLayout
-            android:id="@+id/video_container"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginBottom="16dp"
-            android:clickable="true"
-            android:focusable="true">
-
-            <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-                android:id="@+id/youtube_player_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <!-- Overlay for error/click -->
-            <LinearLayout
-                android:id="@+id/error_overlay"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="#80000000"
-                android:visibility="gone"
-                android:clickable="true">
-
-                <TextView
-                    android:id="@+id/tv_youtube_error"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Error: Video not available\nTap to open in YouTube app"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:textAlignment="center"
-                    android:gravity="center"
-                    android:padding="16dp" />
-
-            </LinearLayout>
-
-        </FrameLayout>
-
-        <!-- Add this after the YouTubePlayerView -->
-        <TextView
-            android:id="@+id/tv_error"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="?attr/colorError"
-            android:textSize="14sp"
-            android:visibility="gone"
-            android:gravity="center"
-            android:padding="16dp" />
-
-        <!-- Course Title -->
         <TextView
             android:id="@+id/tv_course_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:text="Course Title"
             android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:textStyle="bold" />
 
-        <!-- Course Info Row -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_category"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:text="Category"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-            <!-- Category -->
-            <TextView
-                android:id="@+id/tv_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Programming"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp"
-                android:background="?attr/colorPrimaryContainer"
-                android:textColor="?attr/colorOnPrimaryContainer" />
-
-            <!-- Spacer -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <!-- XP Points -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⭐"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_xp_points"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="100 XP"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#FF9800"
-                    android:layout_marginStart="4dp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Duration and Complete Button -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
-
-            <!-- Duration -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⏱"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="30 min"
-                    android:textSize="14sp"
-                    android:layout_marginStart="4dp" />
-            </LinearLayout>
-
-            <!-- Spacer -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <!-- Complete Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_mark_complete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mark as Complete"
-                android:enabled="false" />
-        </LinearLayout>
-
-        <!-- Description Title -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:text="Description"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:textStyle="bold" />
 
-        <!-- Course Description -->
         <TextView
             android:id="@+id/tv_course_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Course description goes here. This is a detailed description of what you will learn in this course."
+            android:text="Course description..."
             android:textSize="16sp"
-            android:lineSpacingExtra="4sp" />
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/tv_subcourses_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/lessons_title"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_subcourses_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/no_lessons_available"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_subcourses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never" />
 
     </LinearLayout>
 </ScrollView>

@@ -28,9 +28,6 @@
             android:id="@+id/action_nav_courses_to_course_details_fragment"
             app:destination="@id/course_details_fragment" />
 
-        <argument
-            android:name="course"
-            app:argType="com.yourpackage.elearning.data.models.Course" />
 
     </fragment>
 
@@ -40,10 +37,25 @@
         android:label="Course Details"
         tools:layout="@layout/fragment_course_details">
 
-        <!-- Add this argument -->
+        <action
+            android:id="@+id/action_course_details_fragment_to_sub_course_details_fragment"
+            app:destination="@id/sub_course_details_fragment" />
+
         <argument
-            android:name="course"
-            app:argType="com.yourpackage.elearning.data.models.Course" />
+            android:name="courseId"
+            app:argType="integer" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/sub_course_details_fragment"
+        android:name="com.yourpackage.elearning.presentation.fragments.SubCourseDetailsFragment"
+        android:label="Lesson Details"
+        tools:layout="@layout/fragment_subcourse_details">
+
+        <argument
+            android:name="subcourse"
+            app:argType="com.yourpackage.elearning.data.models.SubCourse" />
 
     </fragment>
 
@@ -72,10 +84,6 @@
         <action
             android:id="@+id/action_category_courses_fragment_to_course_details_fragment"
             app:destination="@id/course_details_fragment" />
-
-        <argument
-            android:name="course"
-            app:argType="com.yourpackage.elearning.data.models.Course" />
 
     </fragment>
 

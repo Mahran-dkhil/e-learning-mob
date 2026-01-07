@@ -9,9 +9,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yourpackage.elearning.R
+import com.yourpackage.elearning.data.models.Course
 import com.yourpackage.elearning.databinding.FragmentCoursesBinding
 import com.yourpackage.elearning.presentation.adapters.CoursesAdapter
 import com.yourpackage.elearning.presentation.viewmodels.CoursesViewModel
+import androidx.appcompat.widget.SearchView
 
 class CoursesFragment : Fragment() {
 
@@ -19,6 +21,8 @@ class CoursesFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: CoursesViewModel by viewModels()
     private lateinit var coursesAdapter: CoursesAdapter
+
+    private var allCourses: List<Course> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,6 +39,13 @@ class CoursesFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
         setupClickListeners()
+        setupSearch()
+        binding.svCourses.apply {
+            isIconified=false
+            setIconifiedByDefault(false)
+            queryHint = "Search by course or category..."
+            clearFocus()
+        }
 
         viewModel.loadCourses()
     }
@@ -52,8 +63,9 @@ class CoursesFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.courses.observe(viewLifecycleOwner) { courses ->
-            coursesAdapter.submitList(courses)
+        viewModel.courses.observe(viewLifecycleOwner) {
+            allCourses = it
+            coursesAdapter.submitList(it)
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
@@ -78,20 +90,37 @@ class CoursesFragment : Fragment() {
         }
     }
 
-    private fun openCourseDetails(course: com.yourpackage.elearning.data.models.Course) {
-        // Create bundle with course data
-        val bundle = Bundle()
-        bundle.putParcelable("course", course)
-
-        // Navigate using Navigation Component
-        findNavController().navigate(
-            R.id.action_nav_courses_to_course_details_fragment,
-            bundle
-        )
+    private fun openCourseDetails(course: Course) {
+        val action = CoursesFragmentDirections
+            .actionNavCoursesToCourseDetailsFragment(course.id)
+        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun setupSearch() {
+        binding.svCourses.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?) = true
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                val q = newText.orEmpty().trim().lowercase()
+
+                val filtered = if (q.isBlank()) {
+                    allCourses
+                } else {
+                    allCourses.filter { c ->
+                        val titleMatch = c.title.orEmpty().lowercase().contains(q)
+                        val categoryMatch = c.category?.name.orEmpty().lowercase().contains(q)
+                        titleMatch || categoryMatch
+                    }
+                }
+
+                coursesAdapter.submitList(filtered)
+                return true
+            }
+        })
     }
 }
